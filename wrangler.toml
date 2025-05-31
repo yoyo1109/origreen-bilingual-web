@@ -6,8 +6,4 @@ pages_build_output_dir = "dist"
 routes = [
   { pattern = "origreen.com", zone_name = "origreen.com" },
   { pattern = "www.origreen.com", zone_name = "origreen.com" }
-]
-
-[[env.production.services]]
-binding = "ASSETS"
-service = "origreen-bilingual-web" 
+] 
