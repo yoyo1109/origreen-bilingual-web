@@ -151,7 +151,7 @@ const translations = {
 };
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('zh-CN');
+  const [language, setLanguage] = useState<Language>('en-US');
 
   useEffect(() => {
     const savedLang = localStorage.getItem('origreen-language') as Language;
