@@ -80,10 +80,11 @@ const Navigation = () => {
           {/* Logo */}
           <div className="flex-shrink-0">
             <a href="#" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">O</span>
-              </div>
-              <span className="font-inter font-bold text-xl text-gray-900">Origreen</span>
+              <img 
+                src="/lovable-uploads/7027a632-6240-4c57-b815-674f53f9f33e.png" 
+                alt="Origreen Logo" 
+                className="h-8 w-auto"
+              />
             </a>
           </div>
 
