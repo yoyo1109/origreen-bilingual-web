@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Menu, X, Globe } from 'lucide-react';
 import { useLanguage } from './LanguageContext';
+import { Link } from 'react-router-dom';
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -79,12 +79,9 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <a href="#" className="flex items-center space-x-2">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">O</span>
-              </div>
-              <span className="font-inter font-bold text-xl text-gray-900">Origreen</span>
-            </a>
+            <Link to="/" className="flex items-center space-x-2">
+              <img src="/origreen.png" alt="Origreen Logo" className="h-8" />
+            </Link>
           </div>
 
           {/* Desktop Navigation */}

@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useLanguage } from './LanguageContext';
+import { Link } from 'react-router-dom';
 
 const HeroCarousel = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -12,19 +12,19 @@ const HeroCarousel = () => {
       titleKey: 'hero.slide1.title',
       ctaKey: 'hero.slide1.cta',
       href: '#products',
-      image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'
+      image: '/slide1.jpg'
     },
     {
       titleKey: 'hero.slide2.title',
       ctaKey: 'hero.slide2.cta',
-      href: '#about',
-      image: 'https://images.unsplash.com/photo-1574328670249-8823dedb3b31?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'
+      href: '/about',
+      image: '/slide2.jpg'
     },
     {
       titleKey: 'hero.slide3.title',
       ctaKey: 'hero.slide3.cta',
       href: '#contact',
-      image: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80'
+      image: '/slide3.jpg'
     }
   ];
 
@@ -40,8 +40,9 @@ const HeroCarousel = () => {
     setCurrentSlide(index);
   };
 
-  const handleCTAClick = (href: string) => {
+  const handleAnchorClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (href.startsWith('#')) {
+      e.preventDefault();
       const element = document.querySelector(href);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
@@ -55,7 +56,7 @@ const HeroCarousel = () => {
         <div
           key={index}
           className={`absolute inset-0 transition-opacity duration-1000 ${
-            index === currentSlide ? 'opacity-100' : 'opacity-0'
+            index === currentSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
           }`}
         >
           <div
@@ -72,13 +73,24 @@ const HeroCarousel = () => {
                   <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight font-noto-sc">
                     {t(slide.titleKey)}
                   </h1>
-                  <button
-                    onClick={() => handleCTAClick(slide.href)}
-                    className="inline-flex items-center px-8 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-hover"
-                  >
-                    {t(slide.ctaKey)}
-                    <ChevronRight className="ml-2 w-5 h-5" />
-                  </button>
+                  {slide.href.startsWith('/') ? (
+                    <Link
+                      to={slide.href}
+                      className="inline-flex items-center px-8 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-hover"
+                    >
+                      {t(slide.ctaKey)}
+                      <ChevronRight className="ml-2 w-5 h-5" />
+                    </Link>
+                  ) : (
+                    <a
+                      href={slide.href}
+                      onClick={(e) => handleAnchorClick(e, slide.href)}
+                      className="inline-flex items-center px-8 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-hover"
+                    >
+                      {t(slide.ctaKey)}
+                      <ChevronRight className="ml-2 w-5 h-5" />
+                    </a>
+                  )}
                 </div>
               </div>
             </div>
