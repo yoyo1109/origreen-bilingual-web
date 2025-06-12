@@ -6,53 +6,39 @@ import { useLanguage } from './LanguageContext';
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const [activeSection, setActiveSection] = useState('home');
   const { language, setLanguage, t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
+      
+      // Update active section based on scroll position
+      const sections = ['home', 'about', 'services', 'why-us', 'contact'];
+      const currentSection = sections.find(section => {
+        const element = document.getElementById(section);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          return rect.top <= 100 && rect.bottom >= 100;
+        }
+        return false;
+      });
+      
+      if (currentSection) {
+        setActiveSection(currentSection);
+      }
     };
+    
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const navItems = [
-    {
-      name: t('nav.products'),
-      children: [
-        { name: t('nav.minerals'), href: '#products' },
-        { name: t('nav.plant-extracts'), href: '#products' },
-        { name: t('nav.vitamins'), href: '#products' },
-        { name: t('nav.amino-acid'), href: '#products' }
-      ]
-    },
-    {
-      name: t('nav.services'),
-      children: [
-        { name: t('nav.oem'), href: '#contact' },
-        { name: t('nav.rd'), href: '#about' },
-        { name: t('nav.packaging'), href: '#contact' },
-        { name: t('nav.logistics'), href: '#contact' }
-      ]
-    },
-    {
-      name: t('nav.about'),
-      children: [
-        { name: t('nav.company'), href: '#about' },
-        { name: t('nav.team'), href: '#about' },
-        { name: t('nav.certificates'), href: '#about' }
-      ]
-    },
-    {
-      name: t('nav.cases'),
-      children: [
-        { name: t('nav.beauty'), href: '#products' },
-        { name: t('nav.probiotics'), href: '#products' },
-        { name: t('nav.cardio'), href: '#products' },
-        { name: t('nav.joint'), href: '#products' }
-      ]
-    }
+    { name: 'Home', href: '#home' },
+    { name: 'About', href: '#about' },
+    { name: 'Services', href: '#services' },
+    { name: 'Why Us', href: '#why-us' },
+    { name: 'Contact', href: '#contact' }
   ];
 
   const toggleLanguage = () => {
@@ -61,13 +47,19 @@ const Navigation = () => {
 
   const handleLinkClick = (href: string) => {
     setIsOpen(false);
-    setActiveDropdown(null);
     
     if (href.startsWith('#')) {
       const element = document.querySelector(href);
       if (element) {
         element.scrollIntoView({ behavior: 'smooth' });
       }
+    }
+  };
+
+  const handleQuoteClick = () => {
+    const contactSection = document.querySelector('#contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -79,10 +71,10 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <a href="#" className="flex items-center space-x-2">
+            <a href="#home" onClick={(e) => { e.preventDefault(); handleLinkClick('#home'); }} className="flex items-center space-x-2">
               <img 
                 src="/lovable-uploads/7027a632-6240-4c57-b815-674f53f9f33e.png" 
-                alt="Origreen Logo" 
+                alt="Origreen Logo - Natural Supplement Manufacturer" 
                 className="h-8 w-auto"
               />
             </a>
@@ -91,41 +83,25 @@ const Navigation = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
-              <div
+              <a
                 key={item.name}
-                className="relative group"
-                onMouseEnter={() => setActiveDropdown(item.name)}
-                onMouseLeave={() => setActiveDropdown(null)}
+                href={item.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLinkClick(item.href);
+                }}
+                className={`px-3 py-2 text-sm font-medium transition-colors font-inter ${
+                  activeSection === item.href.substring(1)
+                    ? 'text-primary border-b-2 border-primary'
+                    : 'text-gray-700 hover:text-primary'
+                }`}
               >
-                <button className="flex items-center space-x-1 px-3 py-2 text-gray-700 hover:text-primary transition-colors font-inter">
-                  <span>{item.name}</span>
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
-                
-                {activeDropdown === item.name && (
-                  <div className="absolute top-full left-0 mt-2 w-48 bg-white rounded-lg shadow-hover border border-gray-100 py-2 animate-slide-down">
-                    {item.children.map((child) => (
-                      <a
-                        key={child.name}
-                        href={child.href}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          handleLinkClick(child.href);
-                        }}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 hover:text-primary transition-colors"
-                      >
-                        {child.name}
-                      </a>
-                    ))}
-                  </div>
-                )}
-              </div>
+                {item.name}
+              </a>
             ))}
           </div>
 
-          {/* Language Switcher */}
+          {/* Right side buttons */}
           <div className="flex items-center space-x-4">
             <button
               onClick={toggleLanguage}
@@ -133,6 +109,13 @@ const Navigation = () => {
             >
               <Globe className="w-4 h-4" />
               <span className="text-sm">{language === 'zh-CN' ? '中文' : 'EN'}</span>
+            </button>
+
+            <button
+              onClick={handleQuoteClick}
+              className="hidden md:inline-flex items-center px-6 py-2 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-all duration-300 hover:scale-105"
+            >
+              Request a Quote
             </button>
 
             {/* Mobile menu button */}
@@ -151,25 +134,28 @@ const Navigation = () => {
         <div className="md:hidden bg-white border-t border-gray-100 animate-slide-down">
           <div className="px-4 py-2 space-y-1">
             {navItems.map((item) => (
-              <div key={item.name} className="space-y-1">
-                <div className="font-medium text-gray-900 py-2">{item.name}</div>
-                <div className="pl-4 space-y-1">
-                  {item.children.map((child) => (
-                    <a
-                      key={child.name}
-                      href={child.href}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        handleLinkClick(child.href);
-                      }}
-                      className="block py-2 text-sm text-gray-600 hover:text-primary transition-colors"
-                    >
-                      {child.name}
-                    </a>
-                  ))}
-                </div>
-              </div>
+              <a
+                key={item.name}
+                href={item.href}
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleLinkClick(item.href);
+                }}
+                className={`block py-3 text-base font-medium transition-colors ${
+                  activeSection === item.href.substring(1)
+                    ? 'text-primary border-l-4 border-primary pl-4'
+                    : 'text-gray-600 hover:text-primary pl-4'
+                }`}
+              >
+                {item.name}
+              </a>
             ))}
+            <button
+              onClick={handleQuoteClick}
+              className="w-full mt-4 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-lg transition-colors"
+            >
+              Request a Quote
+            </button>
           </div>
         </div>
       )}
